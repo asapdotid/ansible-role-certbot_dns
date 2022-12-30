@@ -5,6 +5,8 @@ Ansible Role: Cerbot DNS (for Let's Encrypt)
 
 Installs and configures Certbot (for Let's Encrypt) using DNS challenge and [DNS Plugins](https://eff-certbot.readthedocs.io/en/stable/using.html#dns-plugins).  
 
+*This fork adds support for [Route53](https://certbot-dns-route53.readthedocs.io/en/stable/) DNS challenge*
+
 Requirements
 ------------
 

@@ -17,10 +17,20 @@
   when:
     - certbot_create_reload_services is defined
 
+- name: Create AWS config dir for root user
+  become: true
+  become_user: root
+  file:
+    path: /root/.aws/
+    state: directory
+    mode: '0600'
+  when:
+    - certbot_dns_plugin == 'route53'
+
 - name: "Create DNS {{ certbot_dns_plugin }} Plugin Credentials File."
   template:
     src: dns_plugin_credentials.j2
-    dest: "{{ certbot_dns_credentials_file }}"
+    dest: "{{ certbot_dns_credentials_file if certbot_dns_plugin != 'route53' else '/root/.aws/config'}}"
     owner: root
     group: root
     mode: 0600
@@ -29,7 +39,7 @@
 
 - name: Upload custom DNS Credentials file.
   copy:
-    src: "{{ certbot_dns_credentials_custom_file  }}"
+    src: "{{ certbot_dns_credentials_custom_file }}"
     dest: "{{ certbot_dns_credentials_file }}"
     state: file
     mode: 0600

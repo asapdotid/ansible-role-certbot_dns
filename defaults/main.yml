@@ -26,6 +26,9 @@ certbot_dns_key_algorithm: "HMAC-SHA512"
 # certbot_dns_api_token: 31209dMAsdasijFkok312hiqdkp
 # certbot_dns_credentials_custom_file: <file-path> # use when plugin is not directly supported by this role
 
+# certbot_dns_plugin: route53 
+# certbot_dns_key_id: XXXXXX
+# certbot_dns_key_secret: XXXXXX
 
 certbot_admin_email: email@example.com
 certbot_certs: []
