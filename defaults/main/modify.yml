@@ -1,16 +1,5 @@
 ---
-# Certbot auto-renew cron job configuration (for certificate renewals)
-certbot_auto_renew: true
-# Enable/Disable to use staging server instead of production (useful for testing)
-certbot_testmode: false
-# Enable/Disable delete certificates prior generating
-certbot_delete_certs: false
-# Parameters used when creating new Certbot certs.
-certbot_create_if_missing: false
-
-#
-## Parameters DNS Plugins - You must set one certbot_dns_plugin
-#
+# Parameters DNS Plugins
 
 # Only for RFC 2136
 certbot_dns_plugin: rfc2136
@@ -26,7 +15,7 @@ certbot_dns_key_algorithm: "HMAC-SHA512"
 # certbot_dns_api_token: 31209dMAsdasijFkok312hiqdkp
 # certbot_dns_credentials_custom_file: <file-path> # use when plugin is not directly supported by this role
 
-# certbot_dns_plugin: route53 
+# certbot_dns_plugin: route53
 # certbot_dns_key_id: XXXXXX
 # certbot_dns_key_secret: XXXXXX
 
@@ -39,11 +28,8 @@ certbot_certs: []
 # - domains:
 #     - example3.com
 
-certbot_create_reload_services: []  # remove brackets if adding services
+certbot_create_reload_services: []
 #   - haproxy
 #   - nginx
 #   - apache
 #   - httpd
-
-# Where to put Certbot when installing from source.
-certbot_dir: /opt/certbot

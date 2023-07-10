@@ -13,3 +13,5 @@ rules:
     allowed-values: ['true', 'false', 'yes', 'no']
   braces:
     max-spaces-inside: 1
+  comments:
+    min-spaces-from-content: 1

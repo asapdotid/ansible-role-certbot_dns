@@ -1,13 +1,4 @@
 ---
-dependencies:
-  - role: geerlingguy.certbot
-    certbot_create_if_missing: false
-    certbot_auto_renew: false
-    certbot_create_standalone_stop_services: []
-    certbot_create_method: "do-not-create"
-# Alternative Syntax
-# - { role: geerlingguy.certbot, certbot_create_if_missing: false, certbot_auto_renew: false, certbot_create_standalone_stop_services: [], certbot_create_method: "do-not-create" }
-
 galaxy_info:
   role_name: certbot_dns
   author: brunobenchimol

@@ -1,0 +1,20 @@
+---
+- name: Check if certificate already exists.
+  ansible.builtin.stat:
+    path: "{{ certbot_letsencrypt_live_dir }}/{{ cert_item.domains | first | replace('*.', '') }}/cert.pem"
+  register: letsencrypt_cert
+
+- name: Delete Certificate
+  ansible.builtin.command:
+    cmd: "{{ certbot_delete_command }}"
+  register: delete_certificate
+  changed_when: delete_certificate.rc != 0
+  when:
+    - letsencrypt_cert.stat.exists
+
+- name: Make sure certificate directory is removed
+  ansible.builtin.file:
+    path: "{{ certbot_letsencrypt_live_dir }}/{{ cert_item.domains | first | replace('*.', '') }}"
+    state: absent
+  when:
+    - letsencrypt_cert.stat.exists

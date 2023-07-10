@@ -1,28 +1,34 @@
 ---
-- import_tasks: dns-plugin-install.yml
-  when: certbot_dns_plugin is defined
+- name: Ensure configuration directories
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/config/ensure-directories.yml"
 
-- import_tasks: prepare-certbot-for-dns.yml
-  when: certbot_dns_plugin is defined
+- name: Install certbot.
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/install/install-certbot.yml"
 
-- name: Delete Certificates.
-  include_tasks: delete-cert.yml
+- name: Setup certbot DNS plugin
+  when:
+    - certbot_dns_plugin is defined
+  block:
+    - name: Install certbot DNS plugin
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install/install-dns-plugin.yml"
+    - name: Config certbot for DNS
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/config/config-certbot-dns.yml"
+
+- name: Certbot create certificate
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/modify/create-cert.yml"
   with_items: "{{ certbot_certs }}"
   when:
-    - certbot_delete_certs|bool
+    - certbot_create_if_missing | bool
   loop_control:
     loop_var: cert_item
 
-- name: Certbot Create Certificates.
-  import_role:
-    name: geerlingguy.certbot
+- name: Delete Certificates.
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/modify/delete-cert.yml"
+  with_items: "{{ certbot_certs }}"
   when:
-    - certbot_create_if_missing
+    - certbot_delete_certs | bool
+  loop_control:
+    loop_var: cert_item
 
-# Same cron name from: geerlingguy.certbot
-- name: Remove cron job for certbot renewal (if configured).
-  cron:
-    name: Certbot automatic renewal.
-    state: absent
-  when:
-    - not certbot_auto_renew
+- name: Setup/Remove cron job for certbot renewal (if configured).
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/modify/setup-cron.yml"

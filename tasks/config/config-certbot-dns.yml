@@ -1,0 +1,31 @@
+---
+- name: Create deploy hook to execute tasks post cert generatation.
+  ansible.builtin.template:
+    src: reload_services.j2
+    dest: "{{ certbot_letsencrypt_renewal_hook_deploy_dir }}/reload_services.sh"
+    owner: root
+    group: root
+    mode: a+x
+  when:
+    - certbot_create_reload_services is defined
+
+- name: Create DNS Route53 plugin credentials file.
+  ansible.builtin.template:
+    src: dns_plugin_credentials.j2
+    dest: "{{ certbot_aws_config_dir }}/config"
+    owner: root
+    group: root
+    mode: '0600'
+  when:
+    - certbot_dns_plugin is in certbot_supported_dns_plugins
+    - certbot_dns_plugin == 'route53'
+
+- name: Create DNS {{ certbot_dns_plugin | capitalize }} credentials file.
+  ansible.builtin.template:
+    src: dns_plugin_credentials.j2
+    dest: "{{ certbot_letsencrypt_credentials_dir }}/{{ certbot_dns_plugin }}.ini"
+    owner: root
+    group: root
+    mode: '0600'
+  when:
+    - certbot_dns_plugin in certbot_supported_dns_plugins

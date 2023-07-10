@@ -1,0 +1,36 @@
+---
+- name: Ensure the directories for Certbot configurations
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  loop:
+    - "{{ certbot_dir }}"
+    - "{{ certbot_letsencrypt_dir }}"
+    - "{{ certbot_letsencrypt_live_dir }}"
+    - "{{ certbot_letsencrypt_renewal_hook_dir }}"
+    - "{{ certbot_letsencrypt_renewal_hook_deploy_dir }}"
+
+- name: Ensure the directories for Certbot credentials
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
+  loop:
+    - "{{ certbot_letsencrypt_credentials_dir }}"
+
+- name: Ensure the directories for AWS configurations
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
+  loop:
+    - "{{ certbot_aws_config_dir }}"
+  when:
+    - certbot_dns_plugin == 'route53'

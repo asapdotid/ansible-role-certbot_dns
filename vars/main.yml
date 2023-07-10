@@ -1,25 +1,26 @@
 ---
-certbot_dns_credentials_file: "/etc/letsencrypt/dns-{{ certbot_dns_plugin }}-credentials"
+certbot_package: certbot
+
 certbot_supported_dns_plugins:
  - rfc2136
  - cloudflare
  - digitalocean
  - luadns
- - route53 
-# disable stop/start standalone mode - use reload_services
-certbot_create_standalone_stop_services: []
+ - route53
+
+__set_dns_route53: "{{ __set_dns_default if certbot_dns_plugin != 'route53' and  else '' }}"
+
 certbot_create_command: >-
   {{ certbot_script }} certonly
   {{ '--hsts' if certbot_hsts else '' }}
   {{ '--test-cert' if certbot_testmode else '' }}
-  --noninteractive --agree-tos
-  --dns-{{ certbot_dns_plugin }} 
-  {{ '--dns-{{ certbot_dns_plugin }}-credentials {{ certbot_dns_credentials_file }}' if certbot_dns_plugin != 'route53' else '' }}
+  --noninteractive
+  --agree-tos
+  --dns-{{ certbot_dns_plugin }}
+  --dns-{{ certbot_dns_plugin }}-credentials {{ certbot_letsencrypt_credentials_dir }}/{{ certbot_dns_plugin }}.ini --dns-cloudflare-propagation-seconds 30
   --email {{ cert_item.email | default(certbot_admin_email) }}
   -d {{ cert_item.domains | join(',') }}
-  {{ '--deploy-hook /etc/letsencrypt/renewal-hooks/deploy/reload_services.sh'
-    if certbot_create_reload_services
-  else '' }}
+  {{ '--deploy-hook /etc/letsencrypt/renewal-hooks/deploy/reload_services.sh' if certbot_create_reload_services else '' }}
 
 certbot_delete_command: >-
   {{ certbot_script }} delete --noninteractive

@@ -1,0 +1,17 @@
+---
+# Available options: 'package', 'snap', 'source'.
+certbot_install_method: 'package'
+
+# Source install configuration.
+certbot_repo: https://github.com/certbot/certbot.git
+certbot_version: master
+certbot_keep_updated: true
+
+# Enable/Disable to use staging server instead of production (useful for testing)
+certbot_testmode: false
+# HTTP Strict Transport Security (HSTS) is a web security policy that ensures that browsers always connect to websites via HTTPS
+certbot_hsts: false
+# Enable/Disable delete certificates prior generating
+certbot_delete_certs: false
+# Parameters used when creating new Certbot certs.
+certbot_create_if_missing: false

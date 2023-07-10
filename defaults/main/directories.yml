@@ -1,0 +1,11 @@
+---
+# Where to put Certbot when installing from source.
+certbot_dir: /opt/certbot
+
+certbot_letsencrypt_dir: /etc/letsencrypt
+certbot_letsencrypt_live_dir: "{{ nginx_letsencrypt_dir }}/live"
+certbot_letsencrypt_renewal_hook_dir: "{{ nginx_letsencrypt_dir }}/renewal-hooks"
+certbot_letsencrypt_renewal_hook_deploy_dir: "{{ nginx_letsencrypt_dir }}/renewal-hooks/deploy"
+certbot_letsencrypt_credentials_dir: "{{ certbot_letsencrypt_dir }}/credentials"
+
+certbot_aws_config_dir: /root/.aws

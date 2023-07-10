@@ -1,0 +1,33 @@
+---
+- name: Package - DNS Plugin {{ certbot_dns_plugin | capitalize }}.
+  when: certbot_install_method == 'package'
+  block:
+    - name: Install DNS Plugin - {{ certbot_dns_plugin | capitalize }}.
+      ansible.builtin.package:
+        name: "python{{ ansible_python.version.major }}-certbot-dns-{{ certbot_dns_plugin }}"
+        state: present
+
+- name: Snap - DNS Plugin {{ certbot_dns_plugin | capitalize }}.
+  when: certbot_install_method == 'snap'
+  block:
+    - name: Make sure certbot Trust Plugins With Root is set.
+      ansible.builtin.command: snap set certbot trust-plugin-with-root=ok
+      register: snap_set_plugin_trust_root
+      changed_when: snap_set_plugin_trust_root is failed
+    - name: Install DNS Plugin - {{ certbot_dns_plugin | capitalize }}.
+      community.general.snap:
+        name: "{{ item }}"
+      loop:
+        - "certbot-dns-{{ certbot_dns_plugin }}"
+
+- name: Source - DNS Plugin - {{ certbot_dns_plugin | capitalize }}.
+  when: certbot_install_method == 'source'
+  block:
+    - name: Source check if certbot-dns-{{ certbot_dns_plugin }} plugin is installed.
+      ansible.builtin.command: certbot plugins | grep dns-{{ certbot_dns_plugin }}
+      register: cf_check
+      ignore_errors: true
+      changed_when: cf_check.rc != 0
+    - name: Source install certbot-dns-{{ certbot_dns_plugin }}.
+      ansible.builtin.command: "cd {{ certbot_dir }}/certbot-dns-{{ certbot_dns_plugin }} && python setup.py install"
+      changed_when: cf_check.rc != 0
