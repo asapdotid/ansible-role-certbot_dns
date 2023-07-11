@@ -8,7 +8,13 @@ certbot_supported_dns_plugins:
  - luadns
  - route53
 
-__set_dns_route53: "{{ __set_dns_default if certbot_dns_plugin != 'route53' and  else '' }}"
+__set_dns_default: --dns-{{ certbot_dns_plugin }}-credentials {{ certbot_letsencrypt_credentials_dir }}/{{ certbot_dns_plugin }}.ini
+__set_dns_rfc2136: "{{ __set_dns_default }}"
+__set_dns_digitalocean: "{{ __set_dns_default }}"
+__set_dns_luadns: "{{ __set_dns_default }}"
+__set_dns_route53: ""
+__set_dns_cloudflare: "{{ __set_dns_default }} --dns-cloudflare-propagation-seconds 30"
+__set_create_cert_with_credential: "{{ lookup('ansible.builtin.vars', '__set_dns_' + certbot_dns_plugin) }}"
 
 certbot_create_command: >-
   {{ certbot_script }} certonly
@@ -17,7 +23,7 @@ certbot_create_command: >-
   --noninteractive
   --agree-tos
   --dns-{{ certbot_dns_plugin }}
-  --dns-{{ certbot_dns_plugin }}-credentials {{ certbot_letsencrypt_credentials_dir }}/{{ certbot_dns_plugin }}.ini --dns-cloudflare-propagation-seconds 30
+  {{ __set_create_cert_with_credential }}
   --email {{ cert_item.email | default(certbot_admin_email) }}
   -d {{ cert_item.domains | join(',') }}
   {{ '--deploy-hook /etc/letsencrypt/renewal-hooks/deploy/reload_services.sh' if certbot_create_reload_services else '' }}

@@ -1,18 +1,24 @@
 ---
 - name: Ensure configuration directories
   ansible.builtin.include_tasks: "{{ role_path }}/tasks/config/ensure-directories.yml"
+  tags: certbot_config_directories
 
 - name: Install certbot.
   ansible.builtin.include_tasks: "{{ role_path }}/tasks/install/install-certbot.yml"
+  tags: certbot_install_modules
 
 - name: Setup certbot DNS plugin
   when:
     - certbot_dns_plugin is defined
+  tags: certbot_install_config_plugin
   block:
     - name: Install certbot DNS plugin
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/install/install-dns-plugin.yml"
+      tags: certbot_install_plugin
+
     - name: Config certbot for DNS
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/config/config-certbot-dns.yml"
+      tags: certbot_config_plugin
 
 - name: Certbot create certificate
   ansible.builtin.include_tasks: "{{ role_path }}/tasks/modify/create-cert.yml"
@@ -21,6 +27,7 @@
     - certbot_create_if_missing | bool
   loop_control:
     loop_var: cert_item
+  tags: certbot_create_cert
 
 - name: Delete Certificates.
   ansible.builtin.include_tasks: "{{ role_path }}/tasks/modify/delete-cert.yml"
@@ -29,6 +36,8 @@
     - certbot_delete_certs | bool
   loop_control:
     loop_var: cert_item
+  tags: certbot_delete_cert
 
 - name: Setup/Remove cron job for certbot renewal (if configured).
   ansible.builtin.include_tasks: "{{ role_path }}/tasks/modify/setup-cron.yml"
+  tags: certbot_config_cron
