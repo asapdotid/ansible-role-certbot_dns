@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: certbot_dns
-  author: brunobenchimol
+  author: Asapdotid
   description: "Installs and configures Certbot With DNS Challenge (for Lets Encrypt)."
   license: MIT
 
